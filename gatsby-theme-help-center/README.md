@@ -263,6 +263,69 @@ yarn workspace site develop # To run the demo site
 yarn workspace @mlent/gatsby-theme-help-center # To run the theme itself
 ```
 
+## Netlify CMS
+
+It is possible to use [Netlify CMS](https://www.netlifycms.org/docs/intro/) to help manage the creation of the help pages.  The Netlify CMS documention has a useful page for getting started with Gatsby https://www.netlifycms.org/docs/gatsby/.
+
+1. Follow the steps outlined in that document.
+2. Copy and paste the following into the `config.yml` file.
+
+Ensure that the `branch` entry matches the branch used in the deployment of your site to Netlify.
+
+```yml
+backend:
+  name: git-gateway
+  branch: main
+
+publish_mode: editorial_workflow
+media_folder: site/static/images
+public_folder: /images
+logo_url: https://gatbsy-theme-help-center.netlify.app/images/logo.png
+slug:
+  encoding: 'ascii'
+  clean_accents: true
+
+collections:
+  - name: 'kb'
+    label: 'Knowledge Base'
+    folder: 'site/src/pages'
+    create: true
+    extension: 'mdx'
+    format: frontmatter
+    slug: '{{year}}-{{month}}-{{day}}_{{slug}}'
+    editor:
+      preview: true
+    fields:
+      - { label: 'Title', name: 'title', widget: 'string' }
+      - { label: 'Description', name: 'description', widget: 'string' }
+      - { label: 'Author', name: 'author', widget: 'string' }
+      - { label: 'Publish Date', name: 'date', widget: 'datetime' }
+      - { label: 'Featured', name: 'featured', widget: 'boolean', required: false }
+      - { 
+        label: 'Categories',
+        name: 'categories',
+        widget: 'select',
+        multiple: true,
+        options: [
+          { label: 'Get Started', value: 'getting-started' },
+          { label: 'FAQs', value: 'faqs' },
+          { label: 'Tutorials', value: 'tutorials' }
+        ]
+      }
+      - {
+        label: 'Related Articles',
+        name: 'relatedArticles',
+        widget: 'relation',
+        multiple: true,
+        required: false,
+        collection: 'kb',
+        search_fields: ['title', 'description'],
+        value_field: '{{slug}}',
+        display_fields: ['title']
+      }
+      - { label: 'Body', name: 'body', widget: 'markdown' }
+```
+
 ## Troubleshooting
 
 ### Failed to compile
